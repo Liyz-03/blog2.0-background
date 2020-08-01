@@ -1,0 +1,17 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hiworlds.bbblog.mapper.CategoryDao">
+    <select id="findAllCategorys" resultType="com.hiworlds.bbblog.domain.Category">
+        select * from category
+    </select>
+    <insert id="saveACategory" keyProperty="category_id" useGeneratedKeys="true" parameterType="com.hiworlds.bbblog.domain.Category">
+        insert into category(category_name,category_create_time) values(#{category_name},#{category_create_time});
+    </insert>
+    <delete id="deleteCategoryById">
+        delete from category where category_id = #{category_id}
+    </delete>
+
+    <update id="modifyCategory" parameterType="com.hiworlds.bbblog.domain.Category">
+        update category set category_name = #{category_name} where category_id = #{category_id}
+    </update>
+</mapper>

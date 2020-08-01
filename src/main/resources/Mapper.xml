@@ -1,0 +1,30 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+
+
+
+<mapper namespace="com.hiworlds.bbblog.mapper.Dbtest01">
+
+
+
+
+    <select id="findAll"
+            resultType="com.hiworlds.bbblog.domain.Dbtest">
+		select *
+		from
+		test
+	</select>
+	<select id="findAllPost"
+			resultType="com.hiworlds.bbblog.domain.Post">
+		select *
+		from
+		post
+	</select>
+	<select id="findAllUsers"
+			resultType="com.hiworlds.bbblog.domain.User">
+		select *
+		from
+		User
+	</select>
+</mapper>

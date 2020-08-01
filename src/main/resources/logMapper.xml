@@ -1,0 +1,17 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.hiworlds.bbblog.mapper.LogDao">
+    <select id="findAllLog" resultType="com.hiworlds.bbblog.domain.Log">
+        select * from log
+    </select>
+    <delete id="deleteLogdeleteLogById">
+        delete from log where log_id = #{id}
+    </delete>
+    <update id="changeLogContent" parameterType="com.hiworlds.bbblog.domain.Log">
+        update log set log_content = #{log_content}, log_time= #{log_time} where log_id = #{log_id}
+    </update>
+    <insert id="saveLog" parameterType="com.hiworlds.bbblog.domain.Log">
+        insert into log(log_content,log_time) values(#{log_content},#{log_time});
+    </insert>
+</mapper>

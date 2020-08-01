@@ -1,0 +1,46 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.hiworlds.bbblog.mapper.LiuyanDao">
+    <select id="findAllLiuyans" resultType="com.hiworlds.bbblog.domain.Liuyan">
+        select * from liuyan
+    </select>
+    <insert id="saveALiuYan" parameterType="com.hiworlds.bbblog.domain.Liuyan">
+-- liuyan_id  liuyan_content   liuyan_user_id  liuyan_time
+        insert into liuyan(liuyan_content,liuyan_user_id,liuyan_time) values(#{liuyan_content},#{liuyan_user_id},#{liuyan_time})
+    </insert>
+    
+    <select id="findAllLiuyansForhome" resultType="com.hiworlds.bbblog.domain.home.HomeLiuyan">
+--         liuyan_id  liuyan_content  liuyan_time  //user_id user_name user_email  user_blog
+        select
+        liuyan_id,
+        liuyan_content,
+        liuyan_time,
+        user_id,
+        user_name,
+        user_blog,
+        user_headimg,
+        user_role
+        from user,liuyan
+        where liuyan.liuyan_user_id = user.user_id
+        order by liuyan.liuyan_time  desc
+    </select>
+    <select id="findAllLiuyanForAdmin" resultType="com.hiworlds.bbblog.domain.admin.AdminLiuyan">
+        select
+        user_name,
+        user_role,
+        user_email,
+        user_blog,
+        liuyan_id,
+        liuyan_content,
+        liuyan_time
+        from user,liuyan
+        where liuyan.liuyan_user_id = user.user_id
+        order by liuyan.liuyan_time  desc
+    </select>
+    <delete id="deleteLiuyanById">
+        delete from liuyan where liuyan_id = #{id}
+    </delete>
+
+
+</mapper>

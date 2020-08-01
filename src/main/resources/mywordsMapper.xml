@@ -1,0 +1,10 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hiworlds.bbblog.mapper.MywordsDao">
+    <select id="findMywords" resultType="com.hiworlds.bbblog.domain.Mywords">
+        select * from mywords
+    </select>
+    
+    <update id="changeMywords" parameterType="com.hiworlds.bbblog.domain.Mywords">
+        update mywords set  mywords_content=#{mywords_content}  where mywords_id =  #{mywords_id};
+    </update>
+</mapper>

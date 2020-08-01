@@ -1,0 +1,67 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.hiworlds.bbblog.mapper.PostDao">
+    <!--   查询所有文章包括草稿 -->
+    <select id="findAllPostsIncludeDraft" resultType="com.hiworlds.bbblog.domain.Post">
+        SELECT post.*,user.user_name,category.`category_name` FROM post, USER,category WHERE post.post_author_id = user.user_id AND post.`post_category_id` = category.`category_id`;
+    </select>
+    <!--    查询所有发表的文章，及作者名-->
+    <select id="findAllPosts" resultType="com.hiworlds.bbblog.domain.Post">
+        SELECT post.*,user.user_name,category.`category_name` FROM post, USER,category WHERE post.post_author_id = user.user_id AND post.`post_category_id` = category.`category_id` and post.post_is_draft=0;
+    </select>
+    <!--    查询指定id文章-->
+    <select id="findPostById" parameterType="java.lang.Integer" resultType="com.hiworlds.bbblog.domain.Post">
+        select post.*,user.user_name from post, user where post.post_author_id = user.user_id and post.post_id = #{id};
+    </select>
+    <!--    查询指定分类的所有文章-->
+    <select id="findAllPostsByCategoryId" resultType="com.hiworlds.bbblog.domain.Post">
+       SELECT post.*,
+        user.user_name,
+        category.category_name
+        FROM
+        post,USER,category
+        WHERE
+        post.`post_author_id` = user.`user_id` AND post.`post_category_id` = category.`category_id` AND category.`category_id`=#{id};
+    </select>
+
+    <insert id="savePost" parameterType="com.hiworlds.bbblog.domain.Post">
+-- 1.post_id  2.post_title 3. post_description 4. post_author_id
+-- 5.post_create_time 6. post_public_time  7. post_is_draft 8. post_content 9.post_category_id
+        insert into post(post_title,post_description,post_author_id,post_create_time,
+        <if test="#{post_public_time} != null">
+            post_public_time,
+        </if>
+        post_is_draft,post_content,post_category_id)
+        values (#{post_title},#{post_description},#{post_author_id},#{post_create_time},
+        <if test="#{post_public_time} != null">
+            #{post_public_time},
+        </if>
+        #{post_is_draft},#{post_content},#{post_category_id})
+    </insert>
+
+    <update id="changePostIsDraft">
+        update post set post_is_draft= #{is_draft}
+         <if test="public_time != null">
+             ,post_public_time= #{public_time}
+         </if>
+         where post_id = #{id}
+    </update>
+
+    <update id="changePostContent" parameterType="com.hiworlds.bbblog.domain.Post">
+        update post set post_title=#{post_title},post_description=#{post_description},post_content=#{post_content},post_public_time=#{post_public_time}
+        where post_id = #{post_id}
+    </update>
+
+    <delete id="deletePostById">
+        delete from post where post_id = #{post_id}
+    </delete>
+
+
+    <select id="getTotal" resultType="int">
+        SELECT COUNT(post_id) allPost FROM post
+    </select>
+    <select id="getAllDraft" resultType="int">
+        SELECT COUNT(post_id) allPost FROM post where post_is_draft = 1
+    </select>
+</mapper>

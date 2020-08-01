@@ -1,0 +1,15 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.hiworlds.bbblog.mapper.CaicaiDao">
+   <insert id="setALogCaicai" parameterType="com.hiworlds.bbblog.domain.CaiCai">
+       insert into logcaicai(logcaicai_id,logcaicai_ip,logcaicai_city,logcaicai_browser,logcaicai_time) values(#{logcaicai_id},#{logcaicai_ip},#{logcaicai_city},#{logcaicai_browser},#{logcaicai_time})
+   </insert>
+    <select id="findAllLogCaicai" resultType="com.hiworlds.bbblog.domain.CaiCai">
+        select * from logcaicai
+    </select>
+
+    <select id="findLogcaicaiCity" resultType="com.hiworlds.bbblog.domain.admin.LogcaicaiCity">
+        SELECT logcaicai.`logcaicai_city`,COUNT(logcaicai_city) total FROM logcaicai GROUP BY(logcaicai.`logcaicai_city`)
+    </select>
+</mapper>

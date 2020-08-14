@@ -7,13 +7,13 @@ import com.hiworlds.bbblog.domain.admin.PostTotal;
 import com.hiworlds.bbblog.mapper.PostDao;
 import com.hiworlds.bbblog.myException.errorMsgConstant.ResponseMsgConstant;
 import com.hiworlds.bbblog.myException.myExceptions.RequestParamsException;
+import com.hiworlds.bbblog.utils.MyResponseJson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -40,15 +40,11 @@ public class PostController {
      * @throws JsonProcessingException
      */
     @GetMapping(value = "/home/findAllPosts")
-    public String findAllPosts() throws JsonProcessingException {
+    public Map findAllPosts() throws JsonProcessingException {
         System.out.println("findAllPosts...");
         List<Post> allPosts = postDao.findAllPosts();
         System.out.println(allPosts);
-        Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("code", 200);
-        resultMap.put("msg", "文章查询成功");
-        resultMap.put("posts", allPosts);
-        return objectMapper.writeValueAsString(resultMap);
+        return MyResponseJson.responseSuccessWithData(allPosts, "文章查询成功");
     }
 
     /**
@@ -59,17 +55,13 @@ public class PostController {
      * @throws JsonProcessingException
      */
     @GetMapping(value = "/home/findPostById")
-    public String findPostById(@RequestParam String id) throws JsonProcessingException {
+    public Map findPostById(@RequestParam String id) throws JsonProcessingException {
         System.out.println(id);
         if (id == null) {
             throw new RequestParamsException();
         }
         Post postById = postDao.findPostById(Integer.parseInt(id));
-        Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("code", 200);
-        resultMap.put("msg", "文章查询成功");
-        resultMap.put("post", postById);
-        return objectMapper.writeValueAsString(resultMap);
+        return MyResponseJson.responseSuccessWithData(postById, "文章查询成功");
     }
 
     /**
@@ -80,17 +72,13 @@ public class PostController {
      * @throws JsonProcessingException
      */
     @GetMapping("/home/findAllPostsByCategoryId")
-    public String findAllPostsByCategoryId(String id) throws JsonProcessingException {
+    public Map findAllPostsByCategoryId(String id) throws JsonProcessingException {
         logger.debug("/home/findAllPostsByCategoryId获取id---" + id);
-        Map<String, Object> map = new HashMap<>();
         if (id == null) {
             throw new RequestParamsException(ResponseMsgConstant.ERROR_MSG_PARAMS_EXCPTION);
         }
         List<Post> postsByCategoryId = postDao.findAllPostsByCategoryId(Integer.parseInt(id));
-        map.put("code", 200);
-        map.put("msg", "获取分类文章成功");
-        map.put("posts", postsByCategoryId);
-        return objectMapper.writeValueAsString(map);
+        return MyResponseJson.responseSuccessWithData(postsByCategoryId, "获取分类文章成功");
     }
 
     /**
@@ -101,11 +89,9 @@ public class PostController {
      * @throws Exception
      */
     @PostMapping("/admin/savePost")
-    public String savePost(@RequestBody Map params) throws Exception {
+    public Map savePost(@RequestBody Map params) throws Exception {
         logger.debug("savePost处理请求。。。");
         Post savePost = new Post();
-        // {title=达娃大, description=达瓦达瓦, content=达瓦达瓦,
-        // isDraft=true, create_time=1594802970000, author_id=1, author_name=Liyz, category_id=20, category_name=其他}
         try {
             savePost.setPost_title((String) params.get("title"));
             savePost.setPost_description((String) params.get("description"));
@@ -124,11 +110,7 @@ public class PostController {
         }
         logger.debug("即将保存的文章Bean： " + savePost.toString());
         postDao.savePost(savePost);
-        Map<String, Object> map = new HashMap<>();
-        map.put("code", 200);
-        map.put("msg", "发布成功！");
-        map.put("data", null);
-        return objectMapper.writeValueAsString(map);
+        return MyResponseJson.responseSuccessNoData("发布成功！");
     }
 
     /**
@@ -138,14 +120,10 @@ public class PostController {
      * @throws JsonProcessingException
      */
     @GetMapping(value = "/admin/findAllPostsIncludeDraft")
-    public String findAllPostsIncludeDraft() throws JsonProcessingException {
+    public Map findAllPostsIncludeDraft() throws JsonProcessingException {
         List<Post> allPosts = postDao.findAllPostsIncludeDraft();
         System.out.println(allPosts);
-        Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("code", 200);
-        resultMap.put("msg", "文章查询成功");
-        resultMap.put("posts", allPosts);
-        return objectMapper.writeValueAsString(resultMap);
+        return MyResponseJson.responseSuccessWithData(allPosts, "文章查询成功");
     }
 
     /**
@@ -156,24 +134,21 @@ public class PostController {
      * @throws JsonProcessingException
      */
     @PostMapping("/admin/changePostIsDraft")
-    public String changePostIsDraft(@RequestBody Map<String, Object> params) throws JsonProcessingException {
+    public Map changePostIsDraft(@RequestBody Map<String, Object> params) throws JsonProcessingException {
         Boolean isDraft = (Boolean) params.get("post_is_draft");
         postDao.changePostIsDraft((Integer) params.get("post_id"), (Boolean) params.get("post_is_draft"), new Date());
-        Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("code", 200);
-        resultMap.put("msg", "文章修改成功");
-        resultMap.put("data", null);
-        return objectMapper.writeValueAsString(resultMap);
+        return MyResponseJson.responseSuccessNoData("文章修改成功！");
     }
 
     /**
      * 修改文章内容
+     *
      * @param params
      * @return
      * @throws Exception
      */
     @PostMapping("/admin/changePostContent")
-    public String changePostContent(@RequestBody Map params) throws Exception {
+    public Map changePostContent(@RequestBody Map params) throws Exception {
         logger.debug("changePostContent接收的参数:" + params);
         Post post = new Post();
         try {
@@ -186,41 +161,30 @@ public class PostController {
             throw new Exception(ResponseMsgConstant.ERROR_MSG_PARAMS_EXCPTION);
         }
         postDao.changePostContent(post);
-        Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("code", 200);
-        resultMap.put("msg", "文章修改成功");
-        resultMap.put("data", null);
-        return objectMapper.writeValueAsString(resultMap);
+        return MyResponseJson.responseSuccessNoData("文章修改成功！");
     }
 
     /**
      * 删除文章
+     *
      * @param post_id
      * @return
      * @throws JsonProcessingException
      */
     @GetMapping("/admin/deletePost")
-    public String deletePostById(@RequestParam("id") Integer post_id) throws JsonProcessingException {
+    public Map deletePostById(@RequestParam("id") Integer post_id) throws JsonProcessingException {
         postDao.deletePostById(post_id);
-        Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("code", 200);
-        resultMap.put("msg", "文章删除成功");
-        resultMap.put("data", null);
-        return objectMapper.writeValueAsString(resultMap);
+        return MyResponseJson.responseSuccessNoData("文章修改成功！");
     }
 
     @GetMapping("/admin/getTotal")
-    public String getTotal() throws JsonProcessingException {
-        int postTotal =  postDao.getTotal();
+    public Map getTotal() throws JsonProcessingException {
+        int postTotal = postDao.getTotal();
         int allDraft = postDao.getAllDraft();
         PostTotal sendPostTotal = new PostTotal();
         sendPostTotal.setAllPost(postTotal);
         sendPostTotal.setDraft(allDraft);
-        Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("code", 200);
-        resultMap.put("msg", "获取成功");
-        resultMap.put("data", sendPostTotal);
-        return objectMapper.writeValueAsString(resultMap);
+        return MyResponseJson.responseSuccessWithData(sendPostTotal, "获取成功");
     }
 
 }

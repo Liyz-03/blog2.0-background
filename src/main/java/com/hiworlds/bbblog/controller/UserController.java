@@ -7,6 +7,7 @@ import com.hiworlds.bbblog.mapper.UserDao;
 import com.hiworlds.bbblog.myException.errorMsgConstant.ResponseMsgConstant;
 import com.hiworlds.bbblog.myException.myExceptions.LoginFailedException;
 import com.hiworlds.bbblog.utils.JwtToken;
+import com.hiworlds.bbblog.utils.MyResponseJson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,7 +35,7 @@ public class UserController {
 
     @ResponseBody
     @PostMapping(value = "/admin/login")
-    public String postLogin(@RequestBody Map<String, String> loginningUser) throws JsonProcessingException {
+    public Map postLogin(@RequestBody Map<String, String> loginningUser) throws JsonProcessingException {
         String email = loginningUser.get("email");
         String password = loginningUser.get("password");
         System.out.println(email+"--"+password);
@@ -47,16 +48,12 @@ public class UserController {
             throw new LoginFailedException(ResponseMsgConstant.ERROR_MSG_LOGIN);
         }
         String token = JwtToken.createToken(oneUserByEmailAndPassword);
-        Map<String, Object> resultMap = new HashMap<>();
         Map<String,Object> innerMap = new HashMap<>();
         innerMap.put("user_id", oneUserByEmailAndPassword.getUser_id());
         innerMap.put("user_role", oneUserByEmailAndPassword.getUser_role());
         innerMap.put("user_name", oneUserByEmailAndPassword.getUser_name());
         innerMap.put("token", token);
-        resultMap.put("code", 200);
-        resultMap.put("msg", "登录成功");
-        resultMap.put("data", innerMap);
-        return objectMapper.writeValueAsString(resultMap);
+        return MyResponseJson.responseSuccessWithData(innerMap,"登录成功");
     }
 
 }

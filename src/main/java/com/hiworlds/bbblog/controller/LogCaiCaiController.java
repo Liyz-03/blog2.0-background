@@ -7,6 +7,7 @@ import com.hiworlds.bbblog.domain.Liuyan;
 import com.hiworlds.bbblog.domain.admin.LogcaicaiCity;
 import com.hiworlds.bbblog.mapper.CaicaiDao;
 import com.hiworlds.bbblog.mapper.LiuyanDao;
+import com.hiworlds.bbblog.utils.MyResponseJson;
 import com.hiworlds.bbblog.utils.UserAgentUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -38,20 +39,19 @@ public class LogCaiCaiController {
 
     /**
      * 访问记录
+     *
      * @param params
      * @return
      * @throws JsonProcessingException
      */
     @PostMapping("/home/setALogCaicai")
-    public String setALogCaicai(@RequestBody Map<String, String> params) throws JsonProcessingException {
-
-        Map<String,Object> responseMap =new HashMap();
+    public Map setALogCaicai(@RequestBody Map<String, String> params) throws JsonProcessingException {
         //参数有误
-        if (params.get("ip")==null || params.get("city")==null || params.get("browser")==null) {
-            responseMap.put("code", 201);
-            responseMap.put("msg", "传来的参数有误");
-            responseMap.put("data", null);
-            return objectMapper.writeValueAsString(responseMap);
+        if (params.get("ip") == null || params.get("city") == null || params.get("browser") == null) {
+//            responseMap.put("code", 201);
+//            responseMap.put("msg", "传来的参数有误");
+//            responseMap.put("data", null);
+            return MyResponseJson.responseFailedNoData("传来的参数有误");
         }
         CaiCai caicai = new CaiCai();
         caicai.setLogcaicai_ip(params.get("ip"));
@@ -59,45 +59,35 @@ public class LogCaiCaiController {
         caicai.setLogcaicai_browser(UserAgentUtil.getUserAgentInfo(params.get("browser")).get("浏览器名称"));
         caicai.setLogcaicai_time(new Date());
         caicaiDao.setALogCaicai(caicai);
-        responseMap.put("code", 200);
-        responseMap.put("msg", "保存成功");
-        responseMap.put("data", null);
-        return objectMapper.writeValueAsString(responseMap);
+        return MyResponseJson.responseSuccessNoData("保存成功");
     }
 
     /**
      * 获取留言总数，踩踩总数
+     *
      * @return
      * @throws JsonProcessingException
      */
     @GetMapping("/home/findAllLogCaicai")
-    public String findAllLogCaicai() throws JsonProcessingException {
+    public Map findAllLogCaicai() throws JsonProcessingException {
         List<CaiCai> allLogCaicai = caicaiDao.findAllLogCaicai();
         List<Liuyan> allLiuyans = liuyanDao.findAllLiuyans();
-        Map<String, Object> map = new HashMap<>();
-        Map<String,Object> innerMap = new HashMap<>();
-        innerMap.put("caicaitotal",  allLogCaicai.size());
+        Map<String, Object> innerMap = new HashMap<>();
+        innerMap.put("caicaitotal", allLogCaicai.size());
         innerMap.put("liuyantotal", allLiuyans.size());
-        map.put("code", 200);
-        map.put("msg", "获取统计人数成功！");
-        map.put("data",innerMap);
-        return objectMapper.writeValueAsString(map);
+        return MyResponseJson.responseSuccessWithData(innerMap, "保存成功");
     }
 
     /**
      * 统计访问地区
+     *
      * @return
      * @throws JsonProcessingException
      */
     @GetMapping("/admin/findLogcaicaiCity")
-    public String findLogcaicaiCity() throws JsonProcessingException {
+    public Map findLogcaicaiCity() throws JsonProcessingException {
         List<LogcaicaiCity> logcaicaiCity = caicaiDao.findLogcaicaiCity();
-        HashMap<String, Object> map = new HashMap<>();
-
-        map.put("code", 200);
-        map.put("msg", "获取统计访问地区成功！");
-        map.put("data",logcaicaiCity);
-        return objectMapper.writeValueAsString(map);
+        return MyResponseJson.responseSuccessWithData(logcaicaiCity, "保存成功");
     }
 
 }
